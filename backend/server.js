@@ -1,10 +1,12 @@
 const express = require("express");
 const app = express();
-const port = 6000;
+const port = 5000;
+const cors = require('cors');
 const connection = require("./db");
 connection();
 // Middleware to parse incoming JSON requests
 app.use(express.json());
+app.use(cors());
 const userRouter = require('./routes/userRoutes');
 const expenseRouter = require('./routes/expenseRoutes');
 

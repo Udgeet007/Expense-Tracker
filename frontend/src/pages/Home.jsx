@@ -1,46 +1,67 @@
-import { useRef } from "react";
+import axios from "axios";
+import { useEffect, useRef, useState } from "react";
 
 const Home = () => {
+
+  let user = JSON.parse(localStorage.getItem("expenseLogin"))
+  console.log(user);
+
   let snoRef = useRef(); //document.getElementbyId('input');
   let placeRef = useRef();
   let priceRef = useRef();
   let dateRef = useRef();
 
   //useRef pura pura tag lake dedeta hae.
-  let arr = [
-    {
-      id: 1,
-      place: "Shimla",
-      price: 500,
-      date: 12 - 10 - 2024,
-    },
-    {
-      id: 2,
-      place: "Uttrakhand",
-      price: 500,
-      date: 22 - 10 - 2024,
-    },
-    {
-      id: 3,
-      place: "Grossary",
-      price: 700,
-      date: 23 - 10 - 2024,
-    },
-  ];
-  const handleSubmit = (e) => {
+  // let arr = [
+  //   {
+  //     id: 1,
+  //     place: "Shimla",
+  //     price: 500,
+  //     date: 12 - 10 - 2024,
+  //   },
+  //   {
+  //     id: 2,
+  //     place: "Uttrakhand",
+  //     price: 500,
+  //     date: 22 - 10 - 2024,
+  //   },
+  //   {
+  //     id: 3,
+  //     place: "Grossary",
+  //     price: 700,
+  //     date: 23 - 10 - 2024,
+  //   },
+  // ];
+
+  const handleSubmit = async(e) => {
     //page reload krne se rokleta hae
     e.preventDefault();
     let obj = {
-      id: snoRef.current.value,
-      place:placeRef.current.value,
+      
+      expenseName:placeRef.current.value,
       price:priceRef.current.value,
       date:dateRef.current.value,
+      userId:user._id, 
     }
     console.log(obj);
+    let res = await axios.post(`http://localhost:5000/api/expense/create`,obj)
+    let data = res.data;
+    console.log(data);
+    getData();
     // console.log("running");
     // e.target.value is used for input button.
     //innerHtml is used to find data in tag element.
   };
+const [arr,setArr] = useState([]);
+ const getData = async() =>{
+  let res = await axios.get(`http://localhost:5000/api/expense/getexpense/${user._id}`);
+  let data = res.data;
+  console.log(data.expenses);
+  setArr(data.expenses);
+ }
+  useEffect(() =>{
+    getData();
+  },[])
   return (
     <div>
       <h1>Home</h1>
@@ -102,7 +123,7 @@ const Home = () => {
             {arr.map((ele, i) => {
               return (
                 <tr
-                  key={i}
+                  key={ele._id}
                   className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
                 >
                   <th
@@ -111,11 +132,11 @@ const Home = () => {
                   >
                     {i + 1}
                   </th>
-                  <td className="px-6 py-4">{ele.place}</td>
+                  <td className="px-6 py-4">{ele.expenseName}</td>
                   <td className="px-6 py-4">{ele.price}</td>
                   <td className="px-6 py-4">{ele.date}</td>
                   <td className="px-6 py-4">
-                    <button type="button" className="bg-green-500">
+                    <button type="button" className="bg-green-500 py-2 px-4 rounded-lg font-bold">
                       Delete
                     </button>
                   </td>
