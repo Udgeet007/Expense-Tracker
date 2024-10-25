@@ -12,7 +12,11 @@ const createExpense = async (req, res) => {
     // console.log(data)
     res.json({ msg: "expense created successfully", success: true });
   } catch (error) {
-    res.json({ msg: "error in creating expense", success:false,error:error.message});
+    res.json({
+      msg: "error in creating expense",
+      success: false,
+      error: error.message,
+    });
   }
 };
 
@@ -38,11 +42,38 @@ const getUserExpense = async (req, res) => {
 const deleteExpense = async (req, res) => {
   const _id = req.params._id;
   await expenseCollection.findByIdAndDelete(_id);
-  res.json({msg:"expense deleted successfully", success:true});
+  res.json({ msg: "expense deleted successfully", success: true });
+};
+
+const updateExpense = async (req, res) => {
+  const { expenseName, price, date } = req.body;
+  const _id = req.params._id;
+
+  try {
+    let expenseData = await expenseCollection.findByIdAndUpdate(
+      _id,
+      {
+        $set: { expenseName, price, date },
+      },
+      { new: true }
+    );
+    res.json({
+      msg: "expense updated successfully",
+      success: true,
+      expense: expenseData,
+    });
+  } catch (error) {
+    res.json({
+      msg: "error in updating expense",
+      success: false,
+      error: error.message,
+    });
+  }
 };
 
 module.exports = {
   createExpense,
   getUserExpense,
   deleteExpense,
+  updateExpense
 };
